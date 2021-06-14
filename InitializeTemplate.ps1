@@ -15,10 +15,10 @@ Write-Host "Your new com.$($InputScope.ToLower()).$($InputName.ToLower()) projec
 $excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
 
 # Rename any directories before we crawl the folders
-Rename-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
+Rename-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" `
+            -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
 Rename-Item -Path ".\$ProjectName" -NewName ".\$InputName"
 
-#TODO Rename any individual files with updated name
 Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Process {
   $isValid = $true
 
@@ -41,10 +41,14 @@ Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Proce
         $updated = $true
       }
 
+      $fileContent = Get-Content $($_.FullName) -Raw
+
       if ($fileContent -cmatch $ProjectScope) {
         $fileContent -creplace $ProjectScope, $InputScope | Set-Content $($_.FullName) -NoNewline
         $updated = $true
       }
+
+      $fileContent = Get-Content $($_.FullName) -Raw
 
       if ($fileContent -cmatch $ProjectAuthor) {
         $fileContent -creplace $ProjectAuthor, $InputAuthor | Set-Content $($_.FullName) -NoNewline
@@ -59,10 +63,14 @@ Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Proce
         $updated = $true
       }
 
+      $fileContent = Get-Content $($_.FullName) -Raw
+
       if ($fileContent -cmatch $ProjectScope.ToLower()) {
         $fileContent -creplace $ProjectScope.ToLower(), $InputScope.ToLower() | Set-Content $($_.FullName) -NoNewline
         $updated = $true
       }
+
+      $fileContent = Get-Content $($_.FullName) -Raw
 
       # Rename all UPPERCASE instances
       if ($fileContent -cmatch $ProjectName.ToUpper()) {
@@ -70,16 +78,22 @@ Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Proce
         $updated = $true
       }
 
+      $fileContent = Get-Content $($_.FullName) -Raw
+
       if ($fileContent -cmatch $ProjectScope.ToUpper()) {
         $fileContent -creplace $ProjectScope.ToUpper(), $InputScope.ToUpper() | Set-Content $($_.FullName) -NoNewline
         $updated = $true
       }
+
+      $fileContent = Get-Content $($_.FullName) -Raw
 
       # Update guids
       if ($fileContent -match "#INSERT_GUID_HERE#") {
         $fileContent -replace "#INSERT_GUID_HERE#", [guid]::NewGuid() | Set-Content $($_.FullName) -NoNewline
         $updated = $true
       }
+
+      $fileContent = Get-Content $($_.FullName) -Raw
 
       # Update year
       if ($fileContent -match "#CURRENT_YEAR#") {
@@ -90,11 +104,6 @@ Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Proce
       # Rename files
       if ($_.Name -match $ProjectName) {
         Rename-Item -LiteralPath $_.FullName -NewName ($_.Name -replace ($ProjectName, $InputName))
-        $updated = $true
-      }
-
-      if ($_.Name -match $ProjectScope) {
-        Rename-Item -LiteralPath $_.FullName -NewName ($_.Name -replace ($ProjectScope, $InputScope))
         $updated = $true
       }
 
