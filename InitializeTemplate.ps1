@@ -16,7 +16,7 @@ $excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
 
 # Rename any directories before we crawl the folders
 Rename-Item -Path ".\ProjectName" -NewName ".\$InputName"
-Rename-Item -Path ".\$InputName\Packages\com.projectscope.projectname" -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
+Rename-Item -Path ".\$InputName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
 
 #TODO Rename any individual files with updated name
 Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Process {
