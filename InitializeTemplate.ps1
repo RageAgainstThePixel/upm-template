@@ -15,8 +15,8 @@ Write-Host "Your new com.$($InputScope.ToLower()).$($InputName.ToLower()) projec
 $excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
 
 # Rename any directories before we crawl the folders
-Rename-Item -Path ".\ProjectName" -NewName ".\$InputName"
-Rename-Item -Path ".\$InputName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
+Rename-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
+Rename-Item -Path ".\$ProjectName" -NewName ".\$InputName"
 
 #TODO Rename any individual files with updated name
 Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Process {
