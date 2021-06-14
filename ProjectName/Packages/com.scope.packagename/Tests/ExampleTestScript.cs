@@ -1,0 +1,17 @@
+﻿// Copyright (c) ProjectAuthor. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using NUnit.Framework;
+
+namespace ProjectScope.ProjectName.Tests
+{
+    public class ExampleTestScript
+    {
+        [Test]
+        public void ExampleTestScriptSimplePasses()
+        {
+            // A Test behaves as an ordinary method
+            // Use the Assert class to test conditions
+        }
+    }
+}
