@@ -15,6 +15,9 @@ Write-Host "Your new com.$($InputScope.ToLower()).$($InputName.ToLower()) projec
 $excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
 
 # Rename any directories before we crawl the folders
+Remove-Item -Path ".\Readme.md"
+Copy-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())\Readme.md" `
+          -Destination ".\Readme.md"
 Rename-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" `
             -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
 Rename-Item -Path ".\$ProjectName" -NewName ".\$InputName"
