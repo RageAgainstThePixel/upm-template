@@ -3,7 +3,7 @@
 
 using NUnit.Framework;
 
-namespace ProjectScope.ProjectName.Tests
+namespace ProjectName.Tests
 {
     public class ExampleTestScript
     {

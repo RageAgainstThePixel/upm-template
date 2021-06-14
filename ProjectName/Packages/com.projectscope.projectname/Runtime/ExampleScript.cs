@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-namespace ProjectScope.ProjectName
+namespace ProjectName
 {
     public class ExampleScript : MonoBehaviour
     {
