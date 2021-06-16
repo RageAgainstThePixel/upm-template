@@ -3,7 +3,7 @@
 
 namespace ProjectName.Editor
 {
-    public class ExampleEditor : UnityEditor.Editor
+    internal class ExampleEditor : UnityEditor.Editor
     {
     }
 }

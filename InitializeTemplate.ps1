@@ -7,19 +7,24 @@ $ProjectAuthor = "ProjectAuthor"
 $InputName = Read-Host "Enter a name for your new project"
 $ProjectName = "ProjectName"
 
-$InputScope = Read-Host "Enter a scope for your new project"
-$ProjectScope = "ProjectScope"
+$InputScope = Read-Host "Enter a scope for your new project (optional)"
 
-Write-Host "Your new com.$($InputScope.ToLower()).$($InputName.ToLower()) project is being created..."
+if(-not [String]::IsNullOrWhiteSpace($InputScope)) {
+  $InputScope = ".$InputScope"
+}
+
+$ProjectScope = ".ProjectScope"
+
+Write-Host "Your new com$($InputScope.ToLower()).$($InputName.ToLower()) project is being created..."
 
 $excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
 
 # Rename any directories before we crawl the folders
 Remove-Item -Path ".\Readme.md"
-Copy-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())\Readme.md" `
+Copy-Item -Path ".\$ProjectName\Packages\com$($ProjectScope.ToLower()).$($ProjectName.ToLower())\Readme.md" `
           -Destination ".\Readme.md"
-Rename-Item -Path ".\$ProjectName\Packages\com.$($ProjectScope.ToLower()).$($ProjectName.ToLower())" `
-            -NewName "com.$($InputScope.ToLower()).$($InputName.ToLower())"
+Rename-Item -Path ".\$ProjectName\Packages\com$($ProjectScope.ToLower()).$($ProjectName.ToLower())" `
+            -NewName "com$($InputScope.ToLower()).$($InputName.ToLower())"
 Rename-Item -Path ".\$ProjectName" -NewName ".\$InputName"
 
 Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Process {

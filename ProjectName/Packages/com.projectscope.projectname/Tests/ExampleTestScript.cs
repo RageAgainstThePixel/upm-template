@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace ProjectName.Tests
 {
-    public class ExampleTestScript
+    internal class ExampleTestScript
     {
         [Test]
         public void ExampleTestScriptSimplePasses()
