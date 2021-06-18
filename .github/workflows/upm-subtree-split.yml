@@ -14,4 +14,4 @@ jobs:
     - name: upm subtree split
       run: |
         git subtree split --prefix="ProjectName/Packages/com.projectscope.projectname" -b upm
-        git push -u origin upm
+        git push -u origin upm --force
