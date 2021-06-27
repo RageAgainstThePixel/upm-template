@@ -2,7 +2,7 @@
 
 using NUnit.Framework;
 
-namespace ProjectName.Tests
+namespace ProjectScope.ProjectName.Tests
 {
     internal class ExampleTestScript
     {
