@@ -1,8 +1,8 @@
-# ProjectName
+# com.projectscope.projectname
 
 [![openupm](https://img.shields.io/npm/v/com.projectscope.projectname?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.projectscope.projectname/)
 
-A ProjectName package for the [Unity](https://unity.com/) Game Engine.
+A ProjectScope.ProjectName package for the [Unity](https://unity.com/) Game Engine.
 
 ## Installing
 
@@ -18,7 +18,7 @@ A ProjectName package for the [Unity](https://unity.com/) Game Engine.
     - `com.projectscope.projectname`
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`
-- Add the `ProjectName` package
+- Add the `ProjectScope.ProjectName` package
 
 ### Via Unity Package Manager and Git url
 
