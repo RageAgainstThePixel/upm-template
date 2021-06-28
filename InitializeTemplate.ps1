@@ -16,17 +16,23 @@ if(-not [String]::IsNullOrWhiteSpace($InputScope)) {
 $ProjectScope = "ProjectScope."
 
 Write-Host "Your new com.$($InputScope.ToLower())$($InputName.ToLower()) project is being created..."
-
-$excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
-
-# Rename any directories before we crawl the folders
 Remove-Item -Path ".\Readme.md"
 Copy-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Readme.md" `
           -Destination ".\Readme.md"
+
+# Rename any directories before we crawl the folders
+Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Runtime\$ProjectScope$ProjectName.asmdef" `
+            -NewName "$InputScope$InputName.asmdef"
+Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Editor\$ProjectScope$ProjectName.Editor.asmdef" `
+            -NewName "$InputScope$InputName.Editor.asmdef"
+Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Tests\$ProjectScope$ProjectName.Tests.asmdef" `
+            -NewName "$InputScope$InputName.Tests.asmdef"
 Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())" `
             -NewName "com.$($InputScope.ToLower())$($InputName.ToLower())"
-Rename-Item -Path ".\$ProjectScope$ProjectName" -NewName ".\$InputScope$InputName"
+Rename-Item -Path ".\$ProjectScope$ProjectName" `
+            -NewName ".\$InputScope$InputName"
 
+$excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
 Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Process {
   $isValid = $true
 
