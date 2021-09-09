@@ -9,13 +9,13 @@
 # =============== #
 [Aa]pp/
 [Aa]pp.meta
-[Tt]emp/
-[Oo]bj/
 [Bb]in/
 [Bb]uilds/
 [Bb]uild/
 [Ll]ibrary/
 [Ll]ogs/
+[Oo]bj/
+[Tt]emp/
 UserSettings/
 UWP/
 WindowsStoreApp/
