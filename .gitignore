@@ -1,14 +1,21 @@
+# ============ #
+# System Files #
+# ============ #
+.DS_Store
+._*
+
 # =============== #
 # Unity generated #
 # =============== #
+[Aa]pp/
+[Aa]pp.meta
 [Tt]emp/
 [Oo]bj/
 [Bb]in/
 [Bb]uilds/
 [Bb]uild/
 [Ll]ibrary/
-[Aa]pp/
-[Aa]pp.meta
+[Ll]ogs/
 UserSettings/
 UWP/
 WindowsStoreApp/
@@ -75,3 +82,7 @@ artifacts/
 ThirdParty/
 ThirdParty.meta
 --Version/
+
+# ====================== #
+# Project Symbolic Links #
+# ====================== #
