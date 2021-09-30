@@ -13,5 +13,9 @@ jobs:
         fetch-depth: 0
     - name: upm subtree split
       run: |
-        git subtree split --prefix="ProjectScope.ProjectName/Packages/com.projectscope.projectname" -b upm
+        $packageDir = Get-Item -Path "**/Packages/com.*" | Select-Object -ExpandProperty FullName
+        Write-Host $packageDir
+        git subtree split --prefix="$packageDir" -b upm
         git push -u origin upm --force
+      working-directory: ${{ github.workspace }}
+      shell: powershell
