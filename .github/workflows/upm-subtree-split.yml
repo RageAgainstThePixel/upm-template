@@ -18,4 +18,4 @@ jobs:
         git subtree split --prefix="$packageDir" -b upm
         git push -u origin upm --force
       working-directory: ${{ github.workspace }}
-      shell: powershell
+      shell: pwsh
