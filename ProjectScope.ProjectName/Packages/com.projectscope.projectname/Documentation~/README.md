@@ -10,7 +10,7 @@ A ProjectScope.ProjectName package for the [Unity](https://unity.com/) Game Engi
 
 - Open your Unity project settings
 - Select the `Package Manager`
-![scoped-registries](Documentation~/images/package-manager-scopes.png)
+![scoped-registries](https://github.com/ProjectAuthor/com.projectscope.projectname/raw/main/ProjectScope.ProjectName/Packages/com.projectscope.projectname/Documentation~/images/package-manager-scopes.png)
 - Add the OpenUPM package registry:
   - `Name: OpenUPM`
   - `URL: https://package.openupm.com`
@@ -25,7 +25,7 @@ A ProjectScope.ProjectName package for the [Unity](https://unity.com/) Game Engi
 - Open your Unity Package Manager
 - Add package from git url: `https://github.com/ProjectAuthor/com.projectscope.projectname.git#upm`
 
-## Getting Started
+## Documentation
 
 ### Project Setup
 

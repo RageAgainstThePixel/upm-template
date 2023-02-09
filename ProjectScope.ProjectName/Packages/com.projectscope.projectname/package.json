@@ -4,11 +4,20 @@
   "description": "ProjectScope.ProjectName description goes here.",
   "keywords": [],
   "version": "1.0.0-preview.1",
-  "unity": "2019.4",
+  "unity": "2021.3",
+  "documentationUrl": "https://github.com/ProjectAuthor/com.projectscope.projectname#documentation",
+  "changelogUrl": "https://github.com/ProjectAuthor/com.projectscope.projectname/releases",
   "license": "MIT",
   "repository": {
-    "type": "git"
+    "type": "git",
+    "repository": "https://github.com/ProjectAuthor/com.projectscope.projectname.git"
   },
-  "author": "ProjectAuthor",
-  "dependencies": {}
+  "author": {
+    "name": "ProjectAuthor",
+    "url": "https://github.com/ProjectAuthor"
+  },
+  "dependencies": {},
+  "publishConfig": {
+    "registry": "https://package.openupm.com"
+  }
 }
