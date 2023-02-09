@@ -1,7 +1,7 @@
 # Copyright (c) Stephen Hodgson. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-$InputAuthor = Read-Host "Set Author name: (i.e. your name or username)"
+$InputAuthor = Read-Host "Set Author name: (i.e. your GitHub username)"
 $ProjectAuthor = "ProjectAuthor"
 
 $InputName = Read-Host "Enter a name for your new project"
@@ -17,7 +17,7 @@ $ProjectScope = "ProjectScope."
 
 Write-Host "Your new com.$($InputScope.ToLower())$($InputName.ToLower()) project is being created..."
 Remove-Item -Path ".\Readme.md"
-Copy-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Readme.md" `
+Copy-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Documentation~\Readme.md" `
           -Destination ".\Readme.md"
 
 # Rename any directories before we crawl the folders

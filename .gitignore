@@ -80,11 +80,9 @@ _ReSharper.Caches
 # ===================== #
 --Version/
 artifacts/
-ThirdParty/
-ThirdParty.meta
 StreamingAssets/
 StreamingAssets.meta
 
 # ====================== #
-# Project Symbolic Links #
+# Project Specific Links #
 # ====================== #
