@@ -71,6 +71,15 @@ Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Proce
 
       $fileContent = Get-Content $($_.FullName) -Raw
 
+      $StephenHodgson = "StephenHodgson"
+
+      if ($fileContent -cmatch $StephenHodgson) {
+        $fileContent -creplace $StephenHodgson, $InputAuthor | Set-Content $($_.FullName) -NoNewline
+        $updated = $true
+      }
+
+      $fileContent = Get-Content $($_.FullName) -Raw
+
       # Rename all lowercase instances
       if ($fileContent -cmatch $ProjectName.ToLower()) {
         $fileContent -creplace $ProjectName.ToLower(), $InputName.ToLower() | Set-Content $($_.FullName) -NoNewline
