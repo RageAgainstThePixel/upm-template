@@ -1,6 +1,9 @@
 {
     "name": "ProjectScope.ProjectName.Editor",
-    "references": [],
+    "rootNamespace": "ProjectScope.ProjectName.Editor",
+    "references": [
+        "ProjectScope.ProjectName"
+    ],
     "includePlatforms": [
         "Editor"
     ],
