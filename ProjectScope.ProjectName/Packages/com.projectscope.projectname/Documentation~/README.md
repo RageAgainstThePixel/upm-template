@@ -10,11 +10,11 @@ A ProjectScope.ProjectName package for the [Unity](https://unity.com/) Game Engi
 
 - Open your Unity project settings
 - Select the `Package Manager`
-![scoped-registries](https://github.com/ProjectAuthor/com.projectscope.projectname/raw/main/ProjectScope.ProjectName/Packages/com.projectscope.projectname/Documentation~/images/package-manager-scopes.png)
+![scoped-registries](images/package-manager-scopes.png)
 - Add the OpenUPM package registry:
-  - `Name: OpenUPM`
-  - `URL: https://package.openupm.com`
-  - `Scope(s):`
+  - Name: `OpenUPM`
+  - URL: `https://package.openupm.com`
+  - Scope(s):
     - `com.projectscope.projectname`
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`
