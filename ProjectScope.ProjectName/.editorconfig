@@ -12,6 +12,8 @@ indent_size = 4
 indent_style = space
 tab_width = 4
 
+file_header_template= Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # New line preferences
 end_of_line = crlf
 insert_final_newline = true
