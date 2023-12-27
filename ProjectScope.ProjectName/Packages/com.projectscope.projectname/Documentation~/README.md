@@ -6,6 +6,10 @@ A ProjectScope.ProjectName package for the [Unity](https://unity.com/) Game Engi
 
 ## Installing
 
+Requires Unity 2021.3 LTS or higher.
+
+The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.openai.unity).
+
 ### Via Unity Package Manager and OpenUPM
 
 - Open your Unity project settings
