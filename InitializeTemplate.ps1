@@ -15,6 +15,7 @@ $ProjectScope = "ProjectScope."
 
 Write-Host "Your new com.$($InputScope.ToLower())$($InputName.ToLower()) project is being created..."
 Remove-Item -Path ".\Readme.md"
+Remove-Item -Path ".\$ProjectScope$ProjectName\Assets\Samples"
 $oldPackageRoot = ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())"
 Copy-Item -Path "$oldPackageRoot\Documentation~\Readme.md" `
   -Destination ".\Readme.md"
