@@ -3,13 +3,11 @@
 
 $InputAuthor = Read-Host "Set Author name: (i.e. your GitHub username)"
 $ProjectAuthor = "ProjectAuthor"
-
 $InputName = Read-Host "Enter a name for your new project"
 $ProjectName = "ProjectName"
-
 $InputScope = Read-Host "Enter a scope for your new project (optional)"
 
-if(-not [String]::IsNullOrWhiteSpace($InputScope)) {
+if (-not [String]::IsNullOrWhiteSpace($InputScope)) {
   $InputScope = "$InputScope."
 }
 
@@ -17,22 +15,23 @@ $ProjectScope = "ProjectScope."
 
 Write-Host "Your new com.$($InputScope.ToLower())$($InputName.ToLower()) project is being created..."
 Remove-Item -Path ".\Readme.md"
-Copy-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Documentation~\Readme.md" `
-          -Destination ".\Readme.md"
-
-# Rename any directories before we crawl the folders
-Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Runtime\$ProjectScope$ProjectName.asmdef" `
-            -NewName "$InputScope$InputName.asmdef"
-Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Editor\$ProjectScope$ProjectName.Editor.asmdef" `
-            -NewName "$InputScope$InputName.Editor.asmdef"
-Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())\Tests\$ProjectScope$ProjectName.Tests.asmdef" `
-            -NewName "$InputScope$InputName.Tests.asmdef"
-Rename-Item -Path ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())" `
-            -NewName "com.$($InputScope.ToLower())$($InputName.ToLower())"
+$oldPackageRoot = ".\$ProjectScope$ProjectName\Packages\com.$($ProjectScope.ToLower())$($ProjectName.ToLower())"
+Copy-Item -Path "$oldPackageRoot\Documentation~\Readme.md" `
+  -Destination ".\Readme.md"
+Rename-Item -Path "$oldPackageRoot\Runtime\$ProjectScope$ProjectName.asmdef" `
+  -NewName "$InputScope$InputName.asmdef"
+Rename-Item -Path "$oldPackageRoot\Editor\$ProjectScope$ProjectName.Editor.asmdef" `
+  -NewName "$InputScope$InputName.Editor.asmdef"
+Rename-Item -Path "$oldPackageRoot\Tests\$ProjectScope$ProjectName.Tests.asmdef" `
+  -NewName "$InputScope$InputName.Tests.asmdef"
+Rename-Item -Path "$oldPackageRoot\Samples~\Demo\$ProjectScope$ProjectName.Demo.asmdef" `
+  -NewName "$InputScope$InputName.Tests.asmdef"
+Rename-Item -Path "$oldPackageRoot" `
+  -NewName "com.$($InputScope.ToLower())$($InputName.ToLower())"
 Rename-Item -Path ".\$ProjectScope$ProjectName" `
-            -NewName ".\$InputScope$InputName"
+  -NewName ".\$InputScope$InputName"
 
-$excludes = @('*Library*', '*Obj*','*InitializeTemplate*')
+$excludes = @('*Library*', '*Obj*', '*InitializeTemplate*')
 Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Process {
   $isValid = $true
 
@@ -137,4 +136,7 @@ Get-ChildItem -Path "*"-File -Recurse -Exclude $excludes | ForEach-Object -Proce
   }
 }
 
+Set-Location ".\$InputScope$InputName\Assets"
+cmd /c mklink /D "Samples" "..\..\$InputScope$InputName\Packages\com.$($InputScope.ToLower())$($InputName.ToLower())\Samples~"
+Set-Location "..\.."
 Remove-Item -Path "InitializeTemplate.ps1"
