@@ -15,7 +15,7 @@ The recommended installation method is though the unity package manager and [Ope
 #### Terminal
 
 ```terminal
-openupm add com.utilities.audio
+openupm add com.projectscope.projectname
 ```
 
 #### Manual
