@@ -1,4 +1,4 @@
-name: validate
+name: Unity
 on:
   schedule:
     - cron: '0 0 * * 0' # Every Sunday at midnight
@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: .github/
       - uses: RageAgainstThePixel/job-builder@v1
