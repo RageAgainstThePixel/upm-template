@@ -269,10 +269,7 @@ if [[ -d "$assets_path" ]]; then
   pushd "$assets_path" >/dev/null || true
   target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
 
-  if [[ -L "Samples" || -d "Samples" ]]; then
-    rm -rf Samples
-  fi
-
+  echo "Creating Samples symlink to ${target}..."
   # create symlink using cmd mklink on Windows, else use ln -s on POSIX
   cmd /c mklink /D "Samples" "${target}" || {
     echo "Failed to create Samples symlink!"
