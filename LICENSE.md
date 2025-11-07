@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) #CURRENT_YEAR# ProjectAuthor
+Copyright (c) #CURRENT_YEAR# ProjectOrganization
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
