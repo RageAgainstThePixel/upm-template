@@ -335,3 +335,4 @@ if command -v unity-cli >/dev/null 2>&1; then
     echo "Failed to open project with unity-cli."
   }
 fi
+exit 0
