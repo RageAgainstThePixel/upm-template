@@ -324,14 +324,14 @@ if [[ -d "$assets_path" ]]; then
 fi
 
 # Remove this script
-# if [[ -f ./InitializeTemplate.sh ]]; then
-#   rm -f ./InitializeTemplate.sh
-# fi
+if [[ -f ./InitializeTemplate.sh ]]; then
+  rm -f ./InitializeTemplate.sh
+fi
 
 echo "Initialization complete."
 # test if unity-cli is installed, if so open project
-# if command -v unity-cli >/dev/null 2>&1; then
-#   unity-cli open-project || {
-#     echo "Failed to open project with unity-cli."
-#   }
-# fi
+if command -v unity-cli >/dev/null 2>&1; then
+  unity-cli open-project || {
+    echo "Failed to open project with unity-cli."
+  }
+fi
