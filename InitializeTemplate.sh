@@ -289,17 +289,32 @@ if [[ -d "$assets_path" ]]; then
       win_target="${win_target//\//\\}"
     fi
 
-    echo "Creating Samples symlink to ${win_target}..."
+    # Prefer running mklink via PowerShell (pwsh or powershell) to ensure proper path handling
+    # Build the command we want to run in cmd.exe
+    cmd_inner="mklink /D \"Samples\" \"${win_target}\""
 
-    cmd_output=$(cmd.exe /C "mklink /D \"Samples\" \"${win_target}\"" 2>&1)
-    cmd_rc=$?
+    # Try pwsh first, then powershell, then fallback to direct cmd.exe
+    if command -v pwsh >/dev/null 2>&1; then
+      echo "pwsh -NoProfile -Command \"cmd /c '${cmd_inner}'\""
+      cmd_output=$(pwsh -NoProfile -Command "cmd /c '${cmd_inner}'" 2>&1)
+      cmd_rc=$?
+    elif command -v powershell >/dev/null 2>&1; then
+      echo "powershell -NoProfile -Command \"cmd /c '${cmd_inner}'\""
+      cmd_output=$(powershell -NoProfile -Command "cmd /c '${cmd_inner}'" 2>&1)
+      cmd_rc=$?
+    else
+      # Last resort: call cmd.exe directly
+      echo "cmd /c ${cmd_inner}"
+      cmd_output=$(cmd.exe /c "${cmd_inner}" 2>&1)
+      cmd_rc=$?
+    fi
 
     if [ ${cmd_rc} -ne 0 ]; then
-      echo "Failed to create Samples symlink! cmd.exe output:"
+      echo "Failed to create Samples symlink! command output:"
       printf '%s\n' "${cmd_output}"
       echo "Hint: mklink may require Administrator privileges or Developer Mode on Windows."
     else
-      # print mklink's success message so user sees the created link
+      # print success message so user sees the created link
       printf '%s\n' "${cmd_output}"
     fi
   else
