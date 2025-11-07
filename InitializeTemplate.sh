@@ -279,11 +279,19 @@ if [[ -d "$assets_path" ]]; then
   esac
 
   if $isWindows; then
-    # normalize paths for Windows cmd
-    target=$(cygpath -w "${target}")
-    echo "Creating Samples symlink to ${target}..."
+    # Convert POSIX path to Windows form for cmd/powershell
+    win_target="${target}"
+    if command -v cygpath >/dev/null 2>&1; then
+      win_target=$(cygpath -w -- "${target}" 2>/dev/null || true)
+    else
+      # naive fallback: strip leading ./ and convert slashes to backslashes
+      win_target="${target#./}"
+      win_target="${win_target//\//\\}"
+    fi
 
-    cmd /c mklink /D "Samples" "${target}" || {
+    echo "Creating Samples symlink to ${win_target}..."
+
+    cmd.exe /C "mklink /D \"Samples\" \"${win_target}\"" || {
       echo "Failed to create Samples symlink!"
     }
   else
