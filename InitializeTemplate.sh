@@ -267,19 +267,57 @@ assets_path="./${InputScope}${InputName}/Assets"
 
 if [[ -d "$assets_path" ]]; then
   pushd "$assets_path" >/dev/null || true
-  target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
-
-  if [[ -L "Samples" || -d "Samples" ]]; then
-    rm -rf Samples
-  fi
+  # Relative path from Assets -> Packages (one directory up)
+  target="../Packages/com.${InputScope,,}${InputName,,}/Samples~"
 
   # create symlink using cmd mklink on Windows, else use ln -s on POSIX
-  if cmd /c mklink /D "Samples" "${target}" >/dev/null 2>&1; then
-    echo "Created  ${target} symlink (mklink)."
-  elif ln -s "${target}" Samples 2>/dev/null; then
-      echo "Created  ${target} symlink (ln -s)."
+  isWindows=false
+
+  case "$(uname -s)" in
+    CYGWIN*|MINGW*|MSYS*|Windows_NT)
+      isWindows=true
+      ;;
+  esac
+
+  if $isWindows; then
+    # Convert POSIX relative path to Windows relative path (keep it relative — do NOT make absolute)
+    # Strip leading ./ if present and convert forward slashes to backslashes
+    win_target="${target#./}"
+    win_target="${win_target//\//\\}"
+
+    # Prefer running mklink via PowerShell (pwsh or powershell) to ensure proper path handling
+    # Build the command we want to run in cmd.exe
+    cmd_inner="mklink /D \"Samples\" \"${win_target}\""
+
+    # Try pwsh first, then powershell, then fallback to direct cmd.exe
+    if command -v pwsh >/dev/null 2>&1; then
+      echo "pwsh -NoProfile -Command \"cmd /c '${cmd_inner}'\""
+      cmd_output=$(pwsh -NoProfile -Command "cmd /c '${cmd_inner}'" 2>&1)
+      cmd_rc=$?
+    elif command -v powershell >/dev/null 2>&1; then
+      echo "powershell -NoProfile -Command \"cmd /c '${cmd_inner}'\""
+      cmd_output=$(powershell -NoProfile -Command "cmd /c '${cmd_inner}'" 2>&1)
+      cmd_rc=$?
+    else
+      # Last resort: call cmd.exe directly
+      echo "cmd /c ${cmd_inner}"
+      cmd_output=$(cmd.exe /c "${cmd_inner}" 2>&1)
+      cmd_rc=$?
+    fi
+
+    if [ ${cmd_rc} -ne 0 ]; then
+      echo "Failed to create Samples symlink! command output:"
+      printf '%s\n' "${cmd_output}"
+      echo "Hint: mklink may require Administrator privileges or Developer Mode on Windows."
+    else
+      # print success message so user sees the created link
+      printf '%s\n' "${cmd_output}"
+    fi
   else
-    echo "Failed to create Samples symlink. You may need to create it manually."
+    echo "Creating Samples symlink to ${target}..."
+    ln -s "${target}" "Samples" || {
+      echo "Failed to create Samples symlink!"
+    }
   fi
 
   popd >/dev/null || true
@@ -297,3 +335,4 @@ if command -v unity-cli >/dev/null 2>&1; then
     echo "Failed to open project with unity-cli."
   }
 fi
+exit 0
