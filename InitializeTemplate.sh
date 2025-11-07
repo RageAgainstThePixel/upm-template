@@ -291,9 +291,17 @@ if [[ -d "$assets_path" ]]; then
 
     echo "Creating Samples symlink to ${win_target}..."
 
-    cmd.exe /C "mklink /D \"Samples\" \"${win_target}\"" || {
-      echo "Failed to create Samples symlink!"
-    }
+    cmd_output=$(cmd.exe /C "mklink /D \"Samples\" \"${win_target}\"" 2>&1)
+    cmd_rc=$?
+
+    if [ ${cmd_rc} -ne 0 ]; then
+      echo "Failed to create Samples symlink! cmd.exe output:"
+      printf '%s\n' "${cmd_output}"
+      echo "Hint: mklink may require Administrator privileges or Developer Mode on Windows."
+    else
+      # print mklink's success message so user sees the created link
+      printf '%s\n' "${cmd_output}"
+    fi
   else
     echo "Creating Samples symlink to ${target}..."
     ln -s "${target}" "Samples" || {
