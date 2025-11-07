@@ -38,7 +38,7 @@ openupm add com.projectscope.projectname
 > This repo has dependencies on other repositories! You are responsible for adding these on your own.
 
 - Open your Unity Package Manager
-- Add package from git url: `https://github.com/ProjectAuthor/com.projectscope.projectname.git#upm`
+- Add package from git url: `https://github.com/ProjectOrganization/com.projectscope.projectname.git#upm`
 
 ## Documentation
 

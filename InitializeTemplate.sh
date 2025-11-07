@@ -1,0 +1,231 @@
+#!/usr/bin/env bash
+# Copyright (c) Stephen Hodgson. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
+set -e pipefail
+IFS=$'\n\t'
+
+read -rp "Set Author name: (i.e. your GitHub username) " InputAuthor
+if [[ -z "$InputAuthor" ]]; then
+  echo "Author cannot be empty"
+  exit 1
+fi
+
+read -rp "Enter a name for your new project: " InputName
+if [[ -z "$InputName" ]]; then
+  echo "Project name cannot be empty"
+  exit 1
+fi
+
+read -rp "Enter a scope for your new project (optional): " InputScope
+
+if [[ -n "$InputScope" && -n "${InputScope// }" ]]; then
+  InputScope="${InputScope}."
+else
+  InputScope="" # Default to empty if none provided
+fi
+
+read -rp "Enter an Organization for your project (Optional) (i.e. your github or organization name): " InputOrganization
+
+# If InputOrganization is empty or contains only whitespace, default to InputName
+if [[ -z "$InputOrganization" || -z "${InputOrganization// }" ]]; then
+  InputOrganization="${InputName}" # Default to InputName if none provided
+fi
+
+ProjectAuthor="ProjectAuthor"
+ProjectName="ProjectName"
+ProjectScope="ProjectScope."
+ProjectOrganization="ProjectOrganization"
+
+# Announce
+echo "Your new com.${InputScope,,}${InputName,,} project is being created..."
+echo "Author: ${InputAuthor}"
+if [[ "${InputOrganization}" != "${InputName}" ]]; then
+  echo "Organization: ${InputOrganization}"
+fi
+echo "Organization: ${InputOrganization}"
+echo "Project Name: ${InputName}"
+echo "Project Scope: ${InputScope}"
+
+oldPackageRoot="./${ProjectScope}${ProjectName}/Packages/com.${ProjectScope,,}${ProjectName,,}"
+
+# Remove existing Readme.md if present at repo root
+if [[ -f ./Readme.md ]]; then
+  rm -f ./Readme.md
+fi
+
+# Remove Samples directory under the template Assets
+if [[ -d ./${ProjectScope}${ProjectName}/Assets/Samples ]]; then
+  rm -rf ./${ProjectScope}${ProjectName}/Assets/Samples
+fi
+
+# Copy Documentation~/Readme.md from package to repo Readme.md
+if [[ -f "${oldPackageRoot}/Documentation~/Readme.md" ]]; then
+  cp "${oldPackageRoot}/Documentation~/Readme.md" ./Readme.md
+fi
+
+# Helper function to safely rename asmdef files
+safe_rename() {
+  src="$1"
+  dst="$2"
+  if [[ -f "${src}" ]]; then
+    mv "${src}" "${dst}"
+  fi
+}
+
+# Rename asmdef files
+safe_rename "${oldPackageRoot}/Runtime/${ProjectScope}${ProjectName}.asmdef" "${oldPackageRoot}/Runtime/${InputScope}${InputName}.asmdef"
+safe_rename "${oldPackageRoot}/Editor/${ProjectScope}${ProjectName}.Editor.asmdef" "${oldPackageRoot}/Editor/${InputScope}${InputName}.Editor.asmdef"
+safe_rename "${oldPackageRoot}/Tests/${ProjectScope}${ProjectName}.Tests.asmdef" "${oldPackageRoot}/Tests/${InputScope}${InputName}.Tests.asmdef"
+safe_rename "${oldPackageRoot}/Samples~/Demo/${ProjectScope}${ProjectName}.Demo.asmdef" "${oldPackageRoot}/Samples~/Demo/${InputScope}${InputName}.Demo.asmdef"
+
+# Rename package folder
+if [[ -d "${oldPackageRoot}" ]]; then
+  newPackageName="com.${InputScope,,}${InputName,,}"
+  mv "${oldPackageRoot}" "./${ProjectScope}${ProjectName}/Packages/${newPackageName}"
+  oldPackageRoot="./${ProjectScope}${ProjectName}/Packages/${newPackageName}"
+fi
+
+# Rename top-level project folder
+if [[ -d "./${ProjectScope}${ProjectName}" ]]; then
+  mv "./${ProjectScope}${ProjectName}" "./${InputScope}${InputName}"
+fi
+
+# Exclude patterns
+excludes=("*Library*" "*Obj*" "*InitializeTemplate*")
+
+# Find files recursively (excluding matches)
+# We'll use find and filter out paths that match any exclude pattern
+while IFS= read -r -d '' file; do
+  # Skip if parent path matches any exclude
+  skip=false
+  for ex in "${excludes[@]}"; do
+    if [[ "${file}" == *${ex#*}* ]]; then
+      skip=true
+      break
+    fi
+  done
+  if $skip; then
+    continue
+  fi
+
+  # Process text files only
+  if [[ -f "${file}" ]]; then
+    updated=false
+    # Read file content
+    content=$(<"${file}")
+
+    # Replace PascalCase ProjectName -> InputName
+    if grep -q "${ProjectName}" <<< "${content}"; then
+      content="${content//${ProjectName}/${InputName}}"
+      updated=true
+    fi
+
+    # Replace ProjectScope -> InputScope
+    if grep -q "${ProjectScope}" <<< "${content}"; then
+      content="${content//${ProjectScope}/${InputScope}}"
+      updated=true
+    fi
+
+    # Replace ProjectOrganization -> InputOrganization
+    if grep -q "${ProjectOrganization}" <<< "${content}"; then
+      content="${content//${ProjectOrganization}/${InputOrganization}}"
+      updated=true
+    fi
+
+    # Replace ProjectAuthor -> InputAuthor
+    if grep -q "${ProjectAuthor}" <<< "${content}"; then
+      content="${content//${ProjectAuthor}/${InputAuthor}}"
+      updated=true
+    fi
+
+    # Replace StephenHodgson -> InputAuthor
+    if grep -q "StephenHodgson" <<< "${content}"; then
+      content="${content//StephenHodgson/${InputAuthor}}"
+      updated=true
+    fi
+
+    # Replace lowercase project name
+    if grep -q "${ProjectName,,}" <<< "${content}"; then
+      content="${content//${ProjectName,,}/${InputName,,}}"
+      updated=true
+    fi
+
+    # Replace lowercase project scope
+    if grep -q "${ProjectScope,,}" <<< "${content}"; then
+      content="${content//${ProjectScope,,}/${InputScope,,}}"
+      updated=true
+    fi
+
+    # Replace uppercase project name
+    if grep -q "${ProjectName^^}" <<< "${content}"; then
+      content="${content//${ProjectName^^}/${InputName^^}}"
+      updated=true
+    fi
+
+    # Replace uppercase project scope
+    if grep -q "${ProjectScope^^}" <<< "${content}"; then
+      content="${content//${ProjectScope^^}/${InputScope^^}}"
+      updated=true
+    fi
+
+    # Replace #INSERT_GUID_HERE# with a new GUID
+    if grep -q "#INSERT_GUID_HERE#" <<< "$content"; then
+      # Generate a GUID (UUID v4)
+      guid=$(cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen 2>/dev/null || printf '%s' "$(openssl rand -hex 16 | sed 's/\(..\)/\1-/g' | sed 's/-$//')")
+      content=${content//#INSERT_GUID_HERE#/${guid}}
+      updated=true
+    fi
+
+    # Replace #CURRENT_YEAR#
+    if grep -q "#CURRENT_YEAR#" <<< "${content}"; then
+      year=$(date +%Y)
+      content=${content//#CURRENT_YEAR#/${year}}
+      updated=true
+    fi
+
+    if $updated; then
+      printf "%s" "${content}" > "${file}"
+      echo "Updated: ${file}"
+    fi
+
+    # Rename files whose name contains ProjectName
+    filename=$(basename -- "${file}")
+    dir=$(dirname -- "${file}")
+    if [[ "${filename}" == *"${ProjectName}"* ]]; then
+      newName=${filename//${ProjectName}/${InputName}}
+      mv "${file}" "${dir}/${newName}"
+      echo "Renamed file: ${file} -> ${dir}/${newName}"
+    fi
+  fi
+
+done < <(find . -type f -print0)
+
+# Create Samples symlink
+# Set location to new project assets path
+assets_path="./${InputScope}${InputName}/Assets"
+if [[ -d "$assets_path" ]]; then
+  pushd "$assets_path" >/dev/null || true
+  target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
+  # Remove existing Samples if present
+  if [[ -L "Samples" || -d "Samples" ]]; then
+    rm -rf Samples
+  fi
+  ln -s "$target" Samples || {
+    echo "Failed to create symlink. You may need to run with elevated permissions on Windows or use Developer Mode."
+  }
+  popd >/dev/null || true
+fi
+
+# Remove this script
+if [[ -f ./InitializeTemplate.sh ]]; then
+  rm -f ./InitializeTemplate.sh
+fi
+
+echo "Initialization complete."
+# test if unity-cli is installed, if so open project
+if command -v unity-cli >/dev/null 2>&1; then
+  unity-cli open-project || {
+    echo "Failed to open project with unity-cli."
+  }
+fi
