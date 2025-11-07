@@ -73,6 +73,59 @@ safe_rename() {
   fi
 }
 
+# Cross-platform GUID/UUID v4 generator
+generate_guid() {
+    # Try /proc on Linux
+    if command -v cat >/dev/null 2>&1 && [[ -r /proc/sys/kernel/random/uuid ]]; then
+        cat /proc/sys/kernel/random/uuid 2>/dev/null || true
+        return
+    fi
+
+    # Try uuidgen
+    if command -v uuidgen >/dev/null 2>&1; then
+        uuidgen 2>/dev/null && return
+    fi
+
+    # Try openssl to create 16 bytes and format as UUID v4
+    if command -v openssl >/dev/null 2>&1; then
+        # openssl rand -hex 16 -> 32 hex chars; format to UUID 8-4-4-4-12
+        hex=$(openssl rand -hex 16 2>/dev/null || true)
+        if [[ -n "$hex" && ${#hex} -ge 32 ]]; then
+        printf '%s-%s-%s-%s-%s' "${hex:0:8}" "${hex:8:4}" "${hex:12:4}" "${hex:16:4}" "${hex:20:12}"
+        return
+        fi
+    fi
+
+    # Try Python (works on many systems including macOS)
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import uuid; print(uuid.uuid4())' 2>/dev/null && return
+    elif command -v python >/dev/null 2>&1; then
+        python -c 'import uuid; print(uuid.uuid4())' 2>/dev/null && return
+    fi
+
+    # Try PowerShell (useful on Windows with Git Bash / MSYS where pwsh may be present)
+    if command -v pwsh >/dev/null 2>&1; then
+        pwsh -NoProfile -Command '[guid]::NewGuid().ToString()' 2>/dev/null && return
+    elif command -v powershell >/dev/null 2>&1; then
+        powershell -NoProfile -Command '[guid]::NewGuid().ToString()' 2>/dev/null && return
+    fi
+
+    # As a last resort, generate using /dev/urandom if available
+    if [[ -r /dev/urandom ]]; then
+        # Read 16 bytes and format
+        if command -v od >/dev/null 2>&1; then
+        bytes=$(od -An -N16 -tx1 /dev/urandom | tr -d '\n' | sed 's/ \+/ /g' | sed 's/ //g')
+        if [[ -n "$bytes" && ${#bytes} -ge 32 ]]; then
+            printf '%s-%s-%s-%s-%s' "${bytes:0:8}" "${bytes:8:4}" "${bytes:12:4}" "${bytes:16:4}" "${bytes:20:12}"
+            return
+        fi
+        fi
+    fi
+
+    # If all methods fail, return error
+    return 1
+}
+
 # Rename asmdef files
 safe_rename "${oldPackageRoot}/Runtime/${ProjectScope}${ProjectName}.asmdef" "${oldPackageRoot}/Runtime/${InputScope}${InputName}.asmdef"
 safe_rename "${oldPackageRoot}/Editor/${ProjectScope}${ProjectName}.Editor.asmdef" "${oldPackageRoot}/Editor/${InputScope}${InputName}.Editor.asmdef"
@@ -171,8 +224,13 @@ while IFS= read -r -d '' file; do
 
     # Replace #INSERT_GUID_HERE# with a new GUID
     if grep -q "#INSERT_GUID_HERE#" <<< "$content"; then
-      # Generate a GUID (UUID v4)
-      guid=$(cat /proc/sys/kernel/random/uuid 2>/dev/null || uuidgen 2>/dev/null || printf '%s' "$(openssl rand -hex 16 | sed 's/\(..\)/\1-/g' | sed 's/-$//')")
+      guid=$(generate_guid)
+
+      if [[ -z "$guid" || $? -ne 0 ]]; then
+        echo "Failed to generate GUID."
+        exit 1
+      fi
+
       content=${content//#INSERT_GUID_HERE#/${guid}}
       updated=true
     fi
@@ -211,7 +269,7 @@ if [[ -d "$assets_path" ]]; then
   if [[ -L "Samples" || -d "Samples" ]]; then
     rm -rf Samples
   fi
-  ln -s "$target" Samples || {
+  ln -s "${target}" Samples || {
     echo "Failed to create symlink. You may need to run with elevated permissions on Windows or use Developer Mode."
   }
   popd >/dev/null || true
