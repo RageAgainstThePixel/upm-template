@@ -145,7 +145,7 @@ if [[ -d "./${ProjectScope}${ProjectName}" ]]; then
 fi
 
 # Exclude patterns
-excludes=("*Library*" "*Obj*" "*InitializeTemplate*")
+excludes=("*\.git*" "*Library*" "*Obj*" "*InitializeTemplate*")
 
 # Find files recursively (excluding matches)
 # We'll use find and filter out paths that match any exclude pattern
