@@ -267,7 +267,8 @@ assets_path="./${InputScope}${InputName}/Assets"
 
 if [[ -d "$assets_path" ]]; then
   pushd "$assets_path" >/dev/null || true
-  target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
+  # Relative path from Assets -> Packages (one directory up)
+  target="../Packages/com.${InputScope,,}${InputName,,}/Samples~"
 
   # create symlink using cmd mklink on Windows, else use ln -s on POSIX
   isWindows=false
@@ -279,15 +280,10 @@ if [[ -d "$assets_path" ]]; then
   esac
 
   if $isWindows; then
-    # Convert POSIX path to Windows form for cmd/powershell
-    win_target="${target}"
-    if command -v cygpath >/dev/null 2>&1; then
-      win_target=$(cygpath -w -- "${target}" 2>/dev/null || true)
-    else
-      # naive fallback: strip leading ./ and convert slashes to backslashes
-      win_target="${target#./}"
-      win_target="${win_target//\//\\}"
-    fi
+    # Convert POSIX relative path to Windows relative path (keep it relative — do NOT make absolute)
+    # Strip leading ./ if present and convert forward slashes to backslashes
+    win_target="${target#./}"
+    win_target="${win_target//\//\\}"
 
     # Prefer running mklink via PowerShell (pwsh or powershell) to ensure proper path handling
     # Build the command we want to run in cmd.exe
