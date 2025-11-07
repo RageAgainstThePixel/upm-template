@@ -43,7 +43,6 @@ echo "Author: ${InputAuthor}"
 if [[ "${InputOrganization}" != "${InputName}" ]]; then
   echo "Organization: ${InputOrganization}"
 fi
-echo "Organization: ${InputOrganization}"
 echo "Project Name: ${InputName}"
 echo "Project Scope: ${InputScope}"
 
