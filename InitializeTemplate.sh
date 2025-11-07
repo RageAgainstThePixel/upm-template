@@ -269,11 +269,29 @@ if [[ -d "$assets_path" ]]; then
   pushd "$assets_path" >/dev/null || true
   target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
 
-  echo "Creating Samples symlink to ${target//\//\\}..."
   # create symlink using cmd mklink on Windows, else use ln -s on POSIX
-  cmd /c mklink /D "Samples" "${target//\//\\}" || {
-    echo "Failed to create Samples symlink!"
-  }
+  isWindows=false
+
+  case "$(uname -s)" in
+    CYGWIN*|MINGW*|MSYS*|Windows_NT)
+      isWindows=true
+      ;;
+  esac
+
+  if $isWindows; then
+    # normalize paths for Windows cmd
+    target=$(cygpath -w "${target}")
+    echo "Creating Samples symlink to ${target}..."
+
+    cmd /c mklink /D "Samples" "${target}" || {
+      echo "Failed to create Samples symlink!"
+    }
+  else
+    echo "Creating Samples symlink to ${target}..."
+    ln -s "${target}" "Samples" || {
+      echo "Failed to create Samples symlink!"
+    }
+  fi
 
   popd >/dev/null || true
 fi
