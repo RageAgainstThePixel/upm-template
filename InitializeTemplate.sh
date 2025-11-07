@@ -64,7 +64,7 @@ if [[ -f "${oldPackageRoot}/Documentation~/Readme.md" ]]; then
   cp "${oldPackageRoot}/Documentation~/Readme.md" ./Readme.md
 fi
 
-# Helper function to safely rename asmdef files
+# Helper function to safely rename files
 safe_rename() {
   src="$1"
   dst="$2"
