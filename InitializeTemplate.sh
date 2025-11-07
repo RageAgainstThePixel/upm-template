@@ -263,8 +263,9 @@ while IFS= read -r -d '' file; do
 
 done < <(find . -type f -print0)
 
-# Create Samples link/junction (POSIX symlink first, then PowerShell junction on Windows)
+# Create Samples link/junction (POSIX symlink first, then PowerShell SymbolicLink on Windows)
 assets_path="./${InputScope}${InputName}/Assets"
+
 if [[ -d "$assets_path" ]]; then
   pushd "$assets_path" >/dev/null || true
   target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
@@ -279,18 +280,28 @@ if [[ -d "$assets_path" ]]; then
   if ln -s "${target}" Samples 2>/dev/null; then
     echo "Created  ${target} symlink."
   else
+    powershell_command="try { New-Item -ItemType SymbolicLink -Path 'Samples' -Target '${target}' -Force | Out-Null; exit 0 } catch { exit 1 }"
+
     if command -v pwsh >/dev/null 2>&1; then
-      if pwsh -NoProfile -Command "try { New-Item -ItemType Junction -Path 'Samples' -Target '${target}' -Force | Out-Null; exit 0 } catch { exit 1 }" >/dev/null 2>&1; then
-        echo "Created ${target} symlink."
+      if pwsh -NoProfile -Command "${powershell_command}" >/dev/null 2>&1; then
+        echo "Created symbolic link via pwsh New-Item"
       else
-        echo "Failed to create junction via pwsh. You may need elevated permissions or Developer Mode enabled on Windows."
+        echo "Failed to create symbolic link via pwsh. You may need elevated permissions or Developer Mode enabled on Windows."
         exit 1
       fi
     elif command -v powershell >/dev/null 2>&1; then
-      if powershell -NoProfile -Command "try { New-Item -ItemType Junction -Path 'Samples' -Target '${target}' -Force | Out-Null; exit 0 } catch { exit 1 }" >/dev/null 2>&1; then
-        echo "Created ${target} symlink."
+      if powershell -NoProfile -Command "${powershell_command}" >/dev/null 2>&1; then
+        echo "Created symbolic link via powershell New-Item"
       else
-        echo "Failed to create junction via powershell. You may need elevated permissions or Developer Mode enabled on Windows."
+        echo "Failed to create symbolic link via powershell. You may need elevated permissions or Developer Mode enabled on Windows."
+        exit 1
+      fi
+    elif command -v cmd.exe >/dev/null 2>&1; then
+      junction_command="mklink /J Samples \"${target//\//\\}\""
+      if cmd.exe /C "${junction_command}" >/dev/null 2>&1; then
+        echo "Created junction via cmd.exe mklink"
+      else
+        echo "Failed to create junction via cmd.exe. You may need elevated permissions on Windows."
         exit 1
       fi
     else
