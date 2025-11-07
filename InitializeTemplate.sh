@@ -274,7 +274,7 @@ if [[ -d "$assets_path" ]]; then
     rm -rf Samples
   fi
   ln -s "${target}" Samples || {
-    echo "Failed to create symlink. You may need to run with elevated permissions on Windows or use Developer Mode."
+    echo "Failed to create symlink. You may need to run with elevated permissions on Windows or enable Developer Mode."
   }
   popd >/dev/null || true
 fi
