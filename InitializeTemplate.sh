@@ -162,8 +162,13 @@ while IFS= read -r -d '' file; do
     continue
   fi
 
-  # Process text files only
+  # Process text files only - skip binaries to avoid "ignored null byte" warnings
   if [[ -f "${file}" ]]; then
+    # Use grep -Iq to test if file is text. grep -Iq returns 0 for text, 1 for binary.
+    if ! grep -Iq . "${file}" 2>/dev/null; then
+      # Skip binary files (images, compiled assemblies, etc.)
+      continue
+    fi
     updated=false
     # Read file content
     content=$(<"${file}")
