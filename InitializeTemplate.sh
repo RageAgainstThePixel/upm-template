@@ -263,19 +263,42 @@ while IFS= read -r -d '' file; do
 
 done < <(find . -type f -print0)
 
-# Create Samples symlink
-# Set location to new project assets path
+# Create Samples link/junction (POSIX symlink first, then PowerShell junction on Windows)
 assets_path="./${InputScope}${InputName}/Assets"
 if [[ -d "$assets_path" ]]; then
   pushd "$assets_path" >/dev/null || true
   target="../../${InputScope}${InputName}/Packages/com.${InputScope,,}${InputName,,}/Samples~"
+
   # Remove existing Samples if present
   if [[ -L "Samples" || -d "Samples" ]]; then
     rm -rf Samples
   fi
-  ln -s "${target}" Samples || {
-    echo "Failed to create symlink. You may need to run with elevated permissions on Windows or enable Developer Mode."
-  }
+
+  echo "Creating Samples link from '${target}'..."
+
+  if ln -s "${target}" Samples 2>/dev/null; then
+    echo "Created  ${target} symlink."
+  else
+    if command -v pwsh >/dev/null 2>&1; then
+      if pwsh -NoProfile -Command "try { New-Item -ItemType Junction -Path 'Samples' -Target '${target}' -Force | Out-Null; exit 0 } catch { exit 1 }" >/dev/null 2>&1; then
+        echo "Created ${target} symlink."
+      else
+        echo "Failed to create junction via pwsh. You may need elevated permissions or Developer Mode enabled on Windows."
+        exit 1
+      fi
+    elif command -v powershell >/dev/null 2>&1; then
+      if powershell -NoProfile -Command "try { New-Item -ItemType Junction -Path 'Samples' -Target '${target}' -Force | Out-Null; exit 0 } catch { exit 1 }" >/dev/null 2>&1; then
+        echo "Created ${target} symlink."
+      else
+        echo "Failed to create junction via powershell. You may need elevated permissions or Developer Mode enabled on Windows."
+        exit 1
+      fi
+    else
+      echo "Failed to create Samples symlink: No suitable method found (POSIX symlink and PowerShell junction both failed)."
+      exit 1
+    fi
+  fi
+
   popd >/dev/null || true
 fi
 
