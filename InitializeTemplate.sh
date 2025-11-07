@@ -263,7 +263,6 @@ while IFS= read -r -d '' file; do
 
 done < <(find . -type f -print0)
 
-# Create Samples link/junction (POSIX symlink first, then cmd mklink on Windows)
 assets_path="./${InputScope}${InputName}/Assets"
 
 if [[ -d "$assets_path" ]]; then
@@ -274,12 +273,13 @@ if [[ -d "$assets_path" ]]; then
     rm -rf Samples
   fi
 
-  if ln -s "${target}" Samples 2>/dev/null; then
-    echo "Created  ${target} symlink."
+  # create symlink using cmd mklink on Windows, else use ln -s on POSIX
+  if cmd /c mklink /D "Samples" "${target}" >/dev/null 2>&1; then
+    echo "Created  ${target} symlink (mklink)."
+  elif ln -s "${target}" Samples 2>/dev/null; then
+      echo "Created  ${target} symlink (ln -s)."
   else
-    cmd /c mklink /D "Samples" "${target}" >/dev/null 2>&1 || {
-      echo "Failed to create Samples symlink. You may need to create it manually."
-    }
+    echo "Failed to create Samples symlink. You may need to create it manually."
   fi
 
   popd >/dev/null || true
