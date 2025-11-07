@@ -274,26 +274,22 @@ if [[ -d "$assets_path" ]]; then
   fi
 
   # create symlink using cmd mklink on Windows, else use ln -s on POSIX
-  if cmd /c mklink /D "Samples" "${target}" >/dev/null 2>&1; then
-    echo "Created  ${target} symlink (mklink)."
-  elif ln -s "${target}" Samples 2>/dev/null; then
-      echo "Created  ${target} symlink (ln -s)."
-  else
-    echo "Failed to create Samples symlink. You may need to create it manually."
-  fi
+  cmd /c mklink /D "Samples" "${target}" || {
+    echo "Failed to create Samples symlink!"
+  }
 
   popd >/dev/null || true
 fi
 
 # Remove this script
-if [[ -f ./InitializeTemplate.sh ]]; then
-  rm -f ./InitializeTemplate.sh
-fi
+# if [[ -f ./InitializeTemplate.sh ]]; then
+#   rm -f ./InitializeTemplate.sh
+# fi
 
 echo "Initialization complete."
 # test if unity-cli is installed, if so open project
-if command -v unity-cli >/dev/null 2>&1; then
-  unity-cli open-project || {
-    echo "Failed to open project with unity-cli."
-  }
-fi
+# if command -v unity-cli >/dev/null 2>&1; then
+#   unity-cli open-project || {
+#     echo "Failed to open project with unity-cli."
+#   }
+# fi
