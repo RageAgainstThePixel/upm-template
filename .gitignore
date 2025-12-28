@@ -53,6 +53,8 @@ obj/
 *.suo
 /*.sln
 *.sln
+/*.slnx
+*.slnx
 *.user
 *.unityproj
 *.ipch
@@ -79,6 +81,7 @@ _ReSharper.Caches
 # Project Specific List #
 # ===================== #
 --Version/
+.artifacts/
 artifacts/
 StreamingAssets/
 StreamingAssets.meta

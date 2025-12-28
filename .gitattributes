@@ -2,7 +2,6 @@ text=auto
 *.sh text eol=lf
 *.cs diff=csharp text eol=crlf
 ## Unity ##
-*.cs diff=csharp text eol=crlf
 *.cginc text
 *.shader text
 *.mat merge=unityyamlmerge eol=lf
