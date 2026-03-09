@@ -11,8 +11,15 @@ root = true
 indent_size = 4
 indent_style = space
 tab_width = 4
-
 file_header_template= Licensed under the MIT License. See LICENSE in the project root for license information.
+
+# Sort usings alphabetically
+dotnet_sort_system_directives_first = false
+dotnet_sort_usings_first = true
+csharp_sort_usings_with_system_first = false
+resharper_csharp_sort_usings_with_system_first = false
+resharper_sort_usings_with_system_first = false
+sort_usings_with_system_first = false
 
 # New line preferences
 end_of_line = crlf
