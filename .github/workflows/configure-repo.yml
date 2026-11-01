@@ -1,0 +1,13 @@
+name: configure-repo
+on:
+  push:
+    branches: ['main']
+permissions:
+  contents: read
+jobs:
+  add-discord-hook:
+    if: ${{ !github.event.repository.is_template }}
+    uses: RageAgainstThePixel/workflows/.github/workflows/add-discord-hook.yml@main
+    secrets:
+      token: ${{ secrets.CI_TOKEN }}
+      discord-webhook: ${{ secrets.UPM_RELEASE_DISCORD_WEBHOOK }}
