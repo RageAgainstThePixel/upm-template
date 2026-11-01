@@ -6,7 +6,8 @@ permissions:
   contents: read
 jobs:
   add-discord-hook:
-    if: ${{ !github.event.repository.is_template }}
+    # only public com.utilities packages post to the upm release channel
+    if: ${{ !github.event.repository.is_template && !github.event.repository.private && startsWith(github.event.repository.name, 'com.utilities.') }}
     uses: RageAgainstThePixel/workflows/.github/workflows/add-discord-hook.yml@main
     secrets:
       token: ${{ secrets.CI_TOKEN }}
