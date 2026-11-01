@@ -2,6 +2,8 @@
 
 A Unity package manager repository template for quickly creating and setting up new UPM package projects in Unity.
 
+The included Unity workflow tests the current Unity streams on pull requests and the older lines monthly.
+
 ## Getting Started
 
 1. Create a new repository in GitHub using this template
